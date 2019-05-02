@@ -13,6 +13,10 @@ const (
 	wyp5 uint64 = 0xeb44accab455d165
 )
 
+const (
+	blockSize = 32
+)
+
 func New() hash.Hash {
 	d := new(digest)
 	d.Reset()
@@ -42,6 +46,7 @@ func mum(a, b uint64) uint64 {
 type digest struct {
 	seed uint64
 	size int
+	buf  []byte
 }
 
 func mread64(b []byte) uint64 {
@@ -72,15 +77,43 @@ func read8(b []byte) uint64 {
 	return uint64(x)
 }
 
-func (d *digest) Write(p []byte) (n int, err error) {
+func (d *digest) Write(p []byte) (int, error) {
 	seed := d.seed
-	size := len(p)
-	for i := 0; i+32 <= size; i += 32 {
-		seed = mum(seed^wyp0, mum(read64(p)^wyp1, read64(p[8:])^wyp2)^mum(read64(p[16:])^wyp3, read64(p[24:])^wyp4))
+	n := len(p)
+	buffered := len(d.buf)
+	if buffered > 0 {
+		rest := blockSize - buffered
+		if len(p) < rest {
+			d.buf = append(d.buf, p...)
+			return n, nil
+		}
+		d.buf = append(d.buf, p[:rest]...)
+		seed = consumeBlock(seed, d.buf)
+		d.buf = d.buf[:0]
+		p = p[rest:]
+	}
+	for i, size := 0, len(p); i+32 <= size; i += 32 {
+		seed = consumeBlock(seed, p)
 		p = p[32:]
 	}
+	if len(p) != 0 {
+		d.buf = append(d.buf, p...)
+	}
+	d.seed = seed
+	d.size += n
+	return n, nil
+}
+
+func (d *digest) Sum(b []byte) []byte {
+	x := d.Sum64()
+	return append(b, byte((x>>56)&0xff), byte((x>>48)&0xff), byte((x>>40)&0xff), byte((x>>32)&0xff), byte((x>>24)&0xff), byte((x>>16)&0xff), byte((x>>8)&0xff), byte(x&0xff))
+}
+
+func (d *digest) Sum64() uint64 {
+	seed := d.seed
 	seed ^= wyp0
-	switch size & 31 {
+	p := d.buf
+	switch d.size & 31 {
 	case 1:
 		seed = mum(seed, read8(p)^wyp1)
 	case 2:
@@ -144,23 +177,15 @@ func (d *digest) Write(p []byte) (n int, err error) {
 	case 31:
 		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, ((read32(p[24:])<<24)|(read16(p[28:])<<8)|read8(p[30:]))^wyp4)
 	}
-	d.seed = seed
-	d.size += size
-	return size, nil
-}
-
-func (d *digest) Sum(b []byte) []byte {
-	x := d.Sum64()
-	return append(b, byte((x >> 56) & 0xff), byte((x >> 48) & 0xff), byte((x >> 40) & 0xff), byte((x >> 32) & 0xff), byte((x >> 24) & 0xff), byte((x >> 16) & 0xff), byte((x >> 8) & 0xff), byte(x & 0xff))
-}
-
-func (d *digest) Sum64() uint64 {
-	return mum(d.seed, uint64(d.size)^wyp5)
+	return mum(seed, uint64(d.size)^wyp5)
 }
 
 func (d *digest) Reset() {
 	d.seed = 0
 	d.size = 0
+	if d.buf != nil {
+		d.buf = d.buf[:0]
+	}
 }
 
 func (d *digest) Size() int {
@@ -168,5 +193,9 @@ func (d *digest) Size() int {
 }
 
 func (d *digest) BlockSize() int {
-	return 32
+	return blockSize
+}
+
+func consumeBlock(seed uint64, p []byte) uint64 {
+	return mum(seed^wyp0, mum(read64(p)^wyp1, read64(p[8:])^wyp2)^mum(read64(p[16:])^wyp3, read64(p[24:])^wyp4))
 }
