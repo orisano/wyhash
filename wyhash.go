@@ -92,9 +92,9 @@ func (d *digest) Write(p []byte) (int, error) {
 		d.buf = d.buf[:0]
 		p = p[rest:]
 	}
-	for i, size := 0, len(p); i+32 <= size; i += 32 {
+	for i, size := 0, len(p); i+blockSize <= size; i += blockSize {
 		seed = consumeBlock(seed, p)
-		p = p[32:]
+		p = p[blockSize:]
 	}
 	if len(p) != 0 {
 		d.buf = append(d.buf, p...)
@@ -113,7 +113,7 @@ func (d *digest) Sum64() uint64 {
 	seed := d.seed
 	seed ^= wyp0
 	p := d.buf
-	switch d.size & 31 {
+	switch d.size & (blockSize - 1) {
 	case 1:
 		seed = mum(seed, read8(p)^wyp1)
 	case 2:
@@ -197,5 +197,6 @@ func (d *digest) BlockSize() int {
 }
 
 func consumeBlock(seed uint64, p []byte) uint64 {
+	p = p[:32]
 	return mum(seed^wyp0, mum(read64(p)^wyp1, read64(p[8:])^wyp2)^mum(read64(p[16:])^wyp3, read64(p[24:])^wyp4))
 }
