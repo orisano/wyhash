@@ -35,15 +35,8 @@ type digest struct {
 	buf  []byte
 }
 
-func mread64(b []byte) uint64 {
-	return read32(b)<<32 | read32(b[4:])
-}
-
 func read64(b []byte) uint64 {
-	_ = b[7]
-	x := uint64(b[7]) | uint64(b[6])<<8 | uint64(b[5])<<16 | uint64(b[4])<<24 |
-		uint64(b[3])<<32 | uint64(b[2])<<40 | uint64(b[1])<<48 | uint64(b[0])<<56
-	return x
+	return read32(b)<<32 | read32(b[4:])
 }
 
 func read32(b []byte) uint64 {
@@ -115,53 +108,53 @@ func (d *digest) Sum64() uint64 {
 	case 7:
 		seed = mum(seed, (read32(p)<<24|read16(p[4:])<<8|read8(p[6:]))^wyp1)
 	case 8:
-		seed = mum(seed, mread64(p)^wyp1)
+		seed = mum(seed, read64(p)^wyp1)
 	case 9:
-		seed = mum(mread64(p)^seed, read8(p[8:])^wyp2)
+		seed = mum(read64(p)^seed, read8(p[8:])^wyp2)
 	case 10:
-		seed = mum(mread64(p)^seed, read16(p[8:])^wyp2)
+		seed = mum(read64(p)^seed, read16(p[8:])^wyp2)
 	case 11:
-		seed = mum(mread64(p)^seed, ((read16(p[8:])<<8)|read8(p[10:]))^wyp2)
+		seed = mum(read64(p)^seed, ((read16(p[8:])<<8)|read8(p[10:]))^wyp2)
 	case 12:
-		seed = mum(mread64(p)^seed, read32(p[8:])^wyp2)
+		seed = mum(read64(p)^seed, read32(p[8:])^wyp2)
 	case 13:
-		seed = mum(mread64(p)^seed, ((read32(p[8:])<<8)|read8(p[12:]))^wyp2)
+		seed = mum(read64(p)^seed, ((read32(p[8:])<<8)|read8(p[12:]))^wyp2)
 	case 14:
-		seed = mum(mread64(p)^seed, ((read32(p[8:])<<16)|read16(p[12:]))^wyp2)
+		seed = mum(read64(p)^seed, ((read32(p[8:])<<16)|read16(p[12:]))^wyp2)
 	case 15:
-		seed = mum(mread64(p)^seed, ((read32(p[8:])<<24)|(read16(p[12:])<<8)|read8(p[14:]))^wyp2)
+		seed = mum(read64(p)^seed, ((read32(p[8:])<<24)|(read16(p[12:])<<8)|read8(p[14:]))^wyp2)
 	case 16:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2)
 	case 17:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, read8(p[16:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, read8(p[16:])^wyp3)
 	case 18:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, read16(p[16:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, read16(p[16:])^wyp3)
 	case 19:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, (read16(p[16:])<<8)|read8(p[18:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, (read16(p[16:])<<8)|read8(p[18:])^wyp3)
 	case 20:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, read32(p[16:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, read32(p[16:])^wyp3)
 	case 21:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, (read32(p[16:])<<8)|read8(p[20:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, (read32(p[16:])<<8)|read8(p[20:])^wyp3)
 	case 22:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, (read32(p[16:])<<16)|read16(p[20:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, (read32(p[16:])<<16)|read16(p[20:])^wyp3)
 	case 23:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, (read32(p[16:])<<24)|(read16(p[20:])<<8)|read8(p[22:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, (read32(p[16:])<<24)|(read16(p[20:])<<8)|read8(p[22:])^wyp3)
 	case 24:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(seed, mread64(p[16:])^wyp3)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(seed, read64(p[16:])^wyp3)
 	case 25:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, read8(p[24:])^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, read8(p[24:])^wyp4)
 	case 26:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, read16(p[24:])^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, read16(p[24:])^wyp4)
 	case 27:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, ((read16(p[24:])<<8)|read8(p[26:]))^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, ((read16(p[24:])<<8)|read8(p[26:]))^wyp4)
 	case 28:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, read32(p[24:])^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, read32(p[24:])^wyp4)
 	case 29:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, ((read32(p[24:])<<8)|read8(p[28:]))^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, ((read32(p[24:])<<8)|read8(p[28:]))^wyp4)
 	case 30:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, ((read32(p[24:])<<16)|read16(p[28:]))^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, ((read32(p[24:])<<16)|read16(p[28:]))^wyp4)
 	case 31:
-		seed = mum(mread64(p)^seed, mread64(p[8:])^wyp2) ^ mum(mread64(p[16:])^seed, ((read32(p[24:])<<24)|(read16(p[28:])<<8)|read8(p[30:]))^wyp4)
+		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, ((read32(p[24:])<<24)|(read16(p[28:])<<8)|read8(p[30:]))^wyp4)
 	}
 	return mum(seed, uint64(d.size)^wyp5)
 }
@@ -182,7 +175,15 @@ func (d *digest) BlockSize() int {
 	return blockSize
 }
 
-func consumeBlock(seed uint64, p []byte) uint64 {
-	p = p[:32]
-	return mum(seed^wyp0, mum(read64(p)^wyp1, read64(p[8:])^wyp2)^mum(read64(p[16:])^wyp3, read64(p[24:])^wyp4))
+func consumeBlock(seed uint64, b []byte) uint64 {
+	_ = b[31]
+	p1 := uint64(b[7]) | uint64(b[6])<<8 | uint64(b[5])<<16 | uint64(b[4])<<24 |
+		uint64(b[3])<<32 | uint64(b[2])<<40 | uint64(b[1])<<48 | uint64(b[0])<<56
+	p2 := uint64(b[15]) | uint64(b[14])<<8 | uint64(b[13])<<16 | uint64(b[12])<<24 |
+		uint64(b[11])<<32 | uint64(b[10])<<40 | uint64(b[9])<<48 | uint64(b[8])<<56
+	p3 := uint64(b[23]) | uint64(b[22])<<8 | uint64(b[21])<<16 | uint64(b[20])<<24 |
+		uint64(b[19])<<32 | uint64(b[18])<<40 | uint64(b[17])<<48 | uint64(b[16])<<56
+	p4 := uint64(b[31]) | uint64(b[30])<<8 | uint64(b[29])<<16 | uint64(b[28])<<24 |
+		uint64(b[27])<<32 | uint64(b[26])<<40 | uint64(b[25])<<48 | uint64(b[24])<<56
+	return mum(seed^wyp0, mum(p1^wyp1, p2^wyp2)^mum(p3^wyp3, p4^wyp4))
 }
