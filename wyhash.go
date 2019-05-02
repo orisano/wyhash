@@ -2,6 +2,7 @@ package wyhash
 
 import (
 	"hash"
+	"math/bits"
 )
 
 const (
@@ -24,22 +25,7 @@ func New() hash.Hash {
 }
 
 func mum(a, b uint64) uint64 {
-	ha, la := a>>32, a&0xffffffff
-	hb, lb := b>>32, b&0xffffffff
-	rh := ha * hb
-	rm0 := ha * lb
-	rm1 := hb * la
-	rl := la * lb
-	t := rl + (rm0 << 32)
-	c := uint64(0)
-	if t < rl {
-		c++
-	}
-	lo := t + (rm1 << 32)
-	if lo < t {
-		c++
-	}
-	hi := rh + (rm0 >> 32) + c
+	hi, lo := bits.Mul64(a, b)
 	return hi ^ lo
 }
 
