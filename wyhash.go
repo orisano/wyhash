@@ -18,8 +18,8 @@ const (
 	blockSize = 32
 )
 
-func New() hash.Hash {
-	d := new(digest)
+func New(seed uint64) hash.Hash {
+	d := &digest{seed: seed}
 	d.Reset()
 	return d
 }
@@ -30,9 +30,10 @@ func mum(a, b uint64) uint64 {
 }
 
 type digest struct {
-	seed uint64
-	size int
-	buf  []byte
+	seed  uint64
+	state uint64
+	size  int
+	buf   []byte
 }
 
 func read64(b []byte) uint64 {
@@ -41,13 +42,13 @@ func read64(b []byte) uint64 {
 
 func read32(b []byte) uint64 {
 	_ = b[3]
-	x := uint32(b[3]) | uint32(b[2])<<8 | uint32(b[1])<<16 | uint32(b[0])<<24
+	x := uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16 | uint32(b[3])<<24
 	return uint64(x)
 }
 
 func read16(b []byte) uint64 {
 	_ = b[1]
-	x := uint16(b[1]) | uint16(b[0])<<8
+	x := uint16(b[0]) | uint16(b[1])<<8
 	return uint64(x)
 }
 
@@ -57,8 +58,10 @@ func read8(b []byte) uint64 {
 }
 
 func (d *digest) Write(p []byte) (int, error) {
-	seed := d.seed
+	seed := d.state
 	n := len(p)
+	d.size += n
+
 	buffered := len(d.buf)
 	if buffered > 0 {
 		rest := blockSize - buffered
@@ -78,8 +81,7 @@ func (d *digest) Write(p []byte) (int, error) {
 	if len(p) != 0 {
 		d.buf = append(d.buf, p...)
 	}
-	d.seed = seed
-	d.size += n
+	d.state = seed
 	return n, nil
 }
 
@@ -89,7 +91,7 @@ func (d *digest) Sum(b []byte) []byte {
 }
 
 func (d *digest) Sum64() uint64 {
-	seed := d.seed
+	seed := d.state
 	seed ^= wyp0
 	p := d.buf
 	switch d.size & (blockSize - 1) {
@@ -156,11 +158,12 @@ func (d *digest) Sum64() uint64 {
 	case 31:
 		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, ((read32(p[24:])<<24)|(read16(p[28:])<<8)|read8(p[30:]))^wyp4)
 	}
-	return mum(seed, uint64(d.size)^wyp5)
+	r := mum(seed, uint64(d.size)^wyp5)
+	return r
 }
 
 func (d *digest) Reset() {
-	d.seed = 0
+	d.state = d.seed
 	d.size = 0
 	if d.buf != nil {
 		d.buf = d.buf[:0]
@@ -177,13 +180,13 @@ func (d *digest) BlockSize() int {
 
 func consumeBlock(seed uint64, b []byte) uint64 {
 	_ = b[31]
-	p1 := uint64(b[7]) | uint64(b[6])<<8 | uint64(b[5])<<16 | uint64(b[4])<<24 |
-		uint64(b[3])<<32 | uint64(b[2])<<40 | uint64(b[1])<<48 | uint64(b[0])<<56
-	p2 := uint64(b[15]) | uint64(b[14])<<8 | uint64(b[13])<<16 | uint64(b[12])<<24 |
-		uint64(b[11])<<32 | uint64(b[10])<<40 | uint64(b[9])<<48 | uint64(b[8])<<56
-	p3 := uint64(b[23]) | uint64(b[22])<<8 | uint64(b[21])<<16 | uint64(b[20])<<24 |
-		uint64(b[19])<<32 | uint64(b[18])<<40 | uint64(b[17])<<48 | uint64(b[16])<<56
-	p4 := uint64(b[31]) | uint64(b[30])<<8 | uint64(b[29])<<16 | uint64(b[28])<<24 |
-		uint64(b[27])<<32 | uint64(b[26])<<40 | uint64(b[25])<<48 | uint64(b[24])<<56
+	p1 := uint64(b[0]) | uint64(b[1])<<8 | uint64(b[2])<<16 | uint64(b[3])<<24 |
+		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
+	p2 := uint64(b[8]) | uint64(b[9])<<8 | uint64(b[10])<<16 | uint64(b[11])<<24 |
+		uint64(b[12])<<32 | uint64(b[13])<<40 | uint64(b[14])<<48 | uint64(b[15])<<56
+	p3 := uint64(b[16]) | uint64(b[17])<<8 | uint64(b[18])<<16 | uint64(b[19])<<24 |
+		uint64(b[20])<<32 | uint64(b[21])<<40 | uint64(b[22])<<48 | uint64(b[23])<<56
+	p4 := uint64(b[24]) | uint64(b[25])<<8 | uint64(b[26])<<16 | uint64(b[27])<<24 |
+		uint64(b[28])<<32 | uint64(b[29])<<40 | uint64(b[30])<<48 | uint64(b[31])<<56
 	return mum(seed^wyp0, mum(p1^wyp1, p2^wyp2)^mum(p3^wyp3, p4^wyp4))
 }
