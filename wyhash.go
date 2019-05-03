@@ -158,8 +158,7 @@ func (d *digest) Sum64() uint64 {
 	case 31:
 		seed = mum(read64(p)^seed, read64(p[8:])^wyp2) ^ mum(read64(p[16:])^seed, ((read32(p[24:])<<24)|(read16(p[28:])<<8)|read8(p[30:]))^wyp4)
 	}
-	r := mum(seed, uint64(d.size)^wyp5)
-	return r
+	return mum(seed, uint64(d.size)^wyp5)
 }
 
 func (d *digest) Reset() {
