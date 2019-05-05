@@ -18,7 +18,7 @@ const (
 	blockSize = 32
 )
 
-func New(seed uint64) hash.Hash {
+func New(seed uint64) hash.Hash64 {
 	d := &digest{seed: seed}
 	d.Reset()
 	return d
