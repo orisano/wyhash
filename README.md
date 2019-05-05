@@ -23,8 +23,8 @@ func main() {
 ```
 
 ## Benchmark
-go test -bench . crypto/sha1
 ```
+$ go test -bench . crypto/sha1
 goos: darwin
 goarch: amd64
 pkg: crypto/sha1
@@ -36,8 +36,8 @@ PASS
 ok  	crypto/sha1	7.375s
 ```
 
-go test -bench . github.com/orisano/wyhash
 ```
+$ go test -bench . github.com/orisano/wyhash
 goos: darwin
 goarch: amd64
 pkg: github.com/orisano/wyhash
