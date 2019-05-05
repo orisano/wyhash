@@ -20,7 +20,7 @@ func TestDigest_Sum64(t *testing.T) {
 		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0x7f0d02f53d64c1f9},
 	}
 	for _, test := range tests {
-		h := New(test.seed).(hash.Hash64)
+		h := New(test.seed)
 		_, _ = h.Write([]byte(test.s))
 		if got := h.Sum64(); got != test.expected {
 			t.Errorf("unexpected digest. expected: %x, but got: %x", test.expected, got)
