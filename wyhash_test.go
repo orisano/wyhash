@@ -1,7 +1,6 @@
 package wyhash
 
 import (
-	"hash"
 	"testing"
 )
 
