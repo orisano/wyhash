@@ -15,7 +15,7 @@ const (
 )
 
 const (
-	blockSize = 32
+	BlockSize = 32
 )
 
 func New(seed uint64) hash.Hash64 {
@@ -64,7 +64,7 @@ func (d *digest) Write(p []byte) (int, error) {
 
 	buffered := len(d.buf)
 	if buffered > 0 {
-		rest := blockSize - buffered
+		rest := BlockSize - buffered
 		if len(p) < rest {
 			d.buf = append(d.buf, p...)
 			return n, nil
@@ -74,9 +74,9 @@ func (d *digest) Write(p []byte) (int, error) {
 		d.buf = d.buf[:0]
 		p = p[rest:]
 	}
-	for i, size := 0, len(p); i+blockSize <= size; i += blockSize {
+	for i, size := 0, len(p); i+BlockSize <= size; i += BlockSize {
 		seed = consumeBlock(seed, p)
-		p = p[blockSize:]
+		p = p[BlockSize:]
 	}
 	if len(p) != 0 {
 		d.buf = append(d.buf, p...)
@@ -94,7 +94,7 @@ func (d *digest) Sum64() uint64 {
 	seed := d.state
 	seed ^= wyp0
 	p := d.buf
-	switch d.size & (blockSize - 1) {
+	switch d.size & (BlockSize - 1) {
 	case 1:
 		seed = mum(seed, read8(p)^wyp1)
 	case 2:
@@ -174,7 +174,7 @@ func (d *digest) Size() int {
 }
 
 func (d *digest) BlockSize() int {
-	return blockSize
+	return BlockSize
 }
 
 func consumeBlock(seed uint64, b []byte) uint64 {
