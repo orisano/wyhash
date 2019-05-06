@@ -9,3 +9,7 @@ jobs:
     steps:
       - checkout
       - run: go test
+workflows:
+  version: 2
+  jobs:
+    - test
