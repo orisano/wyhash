@@ -1,4 +1,7 @@
 # wyhash
+
+[![GoDoc](https://godoc.org/github.com/orisano/wyhash?status.svg)](https://godoc.org/github.com/orisano/wyhash)
+
 A pure-Go wyhash implementation.
 
 ## How to use
