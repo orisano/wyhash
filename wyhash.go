@@ -26,6 +26,12 @@ func New(seed uint64) hash.Hash64 {
 	return d
 }
 
+func Sum64(seed uint64, b []byte) uint64 {
+	h := New(seed)
+	_, _ = h.Write(b)
+	return h.Sum64()
+}
+
 func mum(a, b uint64) uint64 {
 	hi, lo := bits.Mul64(a, b)
 	return hi ^ lo
