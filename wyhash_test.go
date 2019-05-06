@@ -1,8 +1,24 @@
 package wyhash
 
 import (
+	"fmt"
 	"testing"
 )
+
+func ExampleNew() {
+	h := New(1)
+	_, _ = h.Write([]byte("a"))
+	fmt.Printf("%x\n", h.Sum64())
+	// Output:
+	// 6dc395f88b363baa
+}
+
+func ExampleSum64() {
+	d := Sum64(1, []byte("a"))
+	fmt.Printf("%x\n", d)
+	// Output:
+	// 6dc395f88b363baa
+}
 
 func TestDigest_Sum64(t *testing.T) {
 	tests := []struct {
