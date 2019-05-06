@@ -1,3 +1,4 @@
+// Package wyhash implements the wyhash hash algorithm as defined in github.com/wangyi-fudan/wyhash
 package wyhash
 
 import (
@@ -14,18 +15,19 @@ const (
 	wyp5 uint64 = 0xeb44accab455d165
 )
 
-const (
-	BlockSize = 32
+// The blocksize of wyhash in bytes.
+const BlockSize = 32
+// The size of a wyhash checksum in bytes.
+const Size = 8
 
-	Size = 8
-)
-
+// New returns a new hash.Hash64 computing the wyhash checksum.
 func New(seed uint64) hash.Hash64 {
 	d := &digest{seed: seed}
 	d.Reset()
 	return d
 }
 
+// Sum64 returns the wyhash checksum of the b
 func Sum64(seed uint64, b []byte) uint64 {
 	h := New(seed)
 	_, _ = h.Write(b)
