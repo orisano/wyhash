@@ -16,6 +16,8 @@ const (
 
 const (
 	BlockSize = 32
+
+	Size = 8
 )
 
 func New(seed uint64) hash.Hash64 {
@@ -170,7 +172,7 @@ func (d *digest) Reset() {
 }
 
 func (d *digest) Size() int {
-	return 8
+	return Size
 }
 
 func (d *digest) BlockSize() int {
