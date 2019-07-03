@@ -10,14 +10,14 @@ func ExampleNew() {
 	_, _ = h.Write([]byte("a"))
 	fmt.Printf("%x\n", h.Sum64())
 	// Output:
-	// 6dc395f88b363baa
+	// c71ba35f06089cd6
 }
 
 func ExampleSum64() {
 	d := Sum64(1, []byte("a"))
 	fmt.Printf("%x\n", d)
 	// Output:
-	// 6dc395f88b363baa
+	// c71ba35f06089cd6
 }
 
 func TestDigest_Sum64(t *testing.T) {
