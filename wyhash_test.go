@@ -26,13 +26,13 @@ func TestDigest_Sum64(t *testing.T) {
 		seed     uint64
 		expected uint64
 	}{
-		{"", 0, 0xf961f936e29c9345},
-		{"a", 1, 0x6dc395f88b363baa},
-		{"abc", 2, 0x3bc9d7844798ddaa},
-		{"message digest", 3, 0xb31238dc2c500cd3},
-		{"abcdefghijklmnopqrstuvwxyz", 4, 0xea0f542c58cddfe4},
-		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0x1799aca591fe73b4},
-		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0x7f0d02f53d64c1f9},
+		{"", 0, 0x5f03f00e3f460a7},
+		{"a", 1, 0xc71ba35f06089cd6},
+		{"abc", 2, 0xcedc5099a34d885c},
+		{"message digest", 3, 0x1caa6019f2274307},
+		{"abcdefghijklmnopqrstuvwxyz", 4, 0xe3089173e34144d3},
+		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0xed4731baa4233e09},
+		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0xb6ec251785c0d299},
 	}
 	for _, test := range tests {
 		h := New(test.seed)
