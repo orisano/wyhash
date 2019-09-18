@@ -10,14 +10,14 @@ func ExampleNew() {
 	_, _ = h.Write([]byte("a"))
 	fmt.Printf("%x\n", h.Sum64())
 	// Output:
-	// c71ba35f06089cd6
+	// d81367da79aa4b2
 }
 
 func ExampleSum64() {
 	d := Sum64(1, []byte("a"))
 	fmt.Printf("%x\n", d)
 	// Output:
-	// c71ba35f06089cd6
+	// d81367da79aa4b2
 }
 
 func TestDigest_Sum64(t *testing.T) {
@@ -26,13 +26,13 @@ func TestDigest_Sum64(t *testing.T) {
 		seed     uint64
 		expected uint64
 	}{
-		{"", 0, 0x5f03f00e3f460a7},
-		{"a", 1, 0xc71ba35f06089cd6},
-		{"abc", 2, 0xcedc5099a34d885c},
-		{"message digest", 3, 0x1caa6019f2274307},
-		{"abcdefghijklmnopqrstuvwxyz", 4, 0xe3089173e34144d3},
-		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0xed4731baa4233e09},
-		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0xb6ec251785c0d299},
+		{"", 0, 0xbc98efd7661a7a1},
+		{"a", 1, 0xd81367da79aa4b2},
+		{"abc", 2, 0x9ab8a05305db642a},
+		{"message digest", 3, 0x37320f657213a290},
+		{"abcdefghijklmnopqrstuvwxyz", 4, 0xd0b270e1d8a7019c},
+		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0x3270438c23d9a79b},
+		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0xe622160a6bb963c9},
 	}
 	for _, test := range tests {
 		h := New(test.seed)
