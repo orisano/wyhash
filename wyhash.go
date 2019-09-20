@@ -1,6 +1,8 @@
 // Package wyhash implements the wyhash hash algorithm as defined in github.com/wangyi-fudan/wyhash
 package wyhash
 
+//go:generate go run ./avo/gen.go -out avx.s -stubs stubs.go
+
 import (
 	"hash"
 	"math/bits"
@@ -32,10 +34,8 @@ func Sum64(seed uint64, b []byte) uint64 {
 	len0 := len(b)
 	len1 := uint64(len0)
 	p := b
-	for i := 0; i+BlockSize <= len0; i += BlockSize {
-		seed = consumeBlock(seed, p)
-		p = p[BlockSize:]
-	}
+	seed = sum64_avx(seed, b)
+	p = p[len0-len0%BlockSize:]
 	switch len0 & (BlockSize - 1) {
 	case 0:
 		len1 = mix0(len1, 0, seed)

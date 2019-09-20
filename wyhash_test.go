@@ -1,6 +1,7 @@
 package wyhash
 
 import (
+	"encoding/binary"
 	"fmt"
 	"testing"
 )
@@ -35,24 +36,19 @@ func TestDigest_Sum64(t *testing.T) {
 		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0xe622160a6bb963c9},
 	}
 	for _, test := range tests {
-		h := New(test.seed)
-		_, _ = h.Write([]byte(test.s))
-		if got := h.Sum64(); got != test.expected {
+		if got := Sum64(test.seed, []byte(test.s)); got != test.expected {
 			t.Errorf("unexpected digest. expected: %x, but got: %x", test.expected, got)
 		}
 	}
 }
 
-var bench = New(0)
 var buf = make([]byte, 8192)
 
 func benchmarkSize(b *testing.B, size int) {
 	b.SetBytes(int64(size))
-	sum := make([]byte, bench.Size())
+	sum := make([]byte, Size)
 	for i := 0; i < b.N; i++ {
-		bench.Reset()
-		bench.Write(buf[:size])
-		bench.Sum(sum[:0])
+		binary.LittleEndian.PutUint64(sum, Sum64(0, buf))
 	}
 }
 
