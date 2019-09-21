@@ -29,8 +29,11 @@ func New(seed uint64) hash.Hash64 {
 
 // Sum64 returns the wyhash checksum of the b
 func Sum64(seed uint64, b []byte) uint64 {
+	return sum64(seed, b, uint64(len(b)))
+}
+
+func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	len0 := len(b)
-	len1 := uint64(len0)
 	p := b
 	for i := 0; i+BlockSize <= len0; i += BlockSize {
 		seed = consumeBlock(seed, p)
@@ -180,7 +183,7 @@ func (d *digest) Sum(b []byte) []byte {
 }
 
 func (d *digest) Sum64() uint64 {
-	return Sum64(d.state, d.buf)
+	return sum64(d.state, d.buf, uint64(d.size))
 }
 
 func (d *digest) Reset() {
