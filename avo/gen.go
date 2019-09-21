@@ -56,6 +56,7 @@ func main() {
 	XORQ(RDX, RAX)
 	XORQ(RAX, seed)
 	ADDQ(Imm(32), b)
+	ADDQ(Imm(32), i)
 	JMP(LabelRef("loop"))
 
 	Label("done")
