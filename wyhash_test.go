@@ -21,6 +21,27 @@ func ExampleSum64() {
 	// d81367da79aa4b2
 }
 
+func TestSum64(t *testing.T) {
+	tests := []struct {
+		s        string
+		seed     uint64
+		expected uint64
+	}{
+		{"", 0, 0xbc98efd7661a7a1},
+		{"a", 1, 0xd81367da79aa4b2},
+		{"abc", 2, 0x9ab8a05305db642a},
+		{"message digest", 3, 0x37320f657213a290},
+		{"abcdefghijklmnopqrstuvwxyz", 4, 0xd0b270e1d8a7019c},
+		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0x602a1894d3bbfe7f},
+		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0x829e9c148b75970e},
+	}
+	for _, test := range tests {
+		if got := Sum64(test.seed, []byte(test.s)); got != test.expected {
+			t.Errorf("unexpected digest. expected: %x, but got: %x", test.expected, got)
+		}
+	}
+}
+
 func TestDigest_Sum64(t *testing.T) {
 	tests := []struct {
 		s        string
@@ -32,11 +53,13 @@ func TestDigest_Sum64(t *testing.T) {
 		{"abc", 2, 0x9ab8a05305db642a},
 		{"message digest", 3, 0x37320f657213a290},
 		{"abcdefghijklmnopqrstuvwxyz", 4, 0xd0b270e1d8a7019c},
-		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0x3270438c23d9a79b},
-		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0xe622160a6bb963c9},
+		{"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5, 0x602a1894d3bbfe7f},
+		{"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 6, 0x829e9c148b75970e},
 	}
 	for _, test := range tests {
-		if got := Sum64(test.seed, []byte(test.s)); got != test.expected {
+		h := New(test.seed)
+		h.Write([]byte(test.s))
+		if got := h.Sum64(); got != test.expected {
 			t.Errorf("unexpected digest. expected: %x, but got: %x", test.expected, got)
 		}
 	}
