@@ -1,7 +1,7 @@
 // Package wyhash implements the wyhash hash algorithm as defined in github.com/wangyi-fudan/wyhash
 package wyhash
 
-//go:generate go run ./avo/gen.go -out avx.s -stubs stubs.go
+//go:generate go run ./avo/gen.go -out wyhash_amd64.s -stubs stubs.go
 
 import (
 	"hash"
@@ -36,7 +36,13 @@ func Sum64(seed uint64, b []byte) uint64 {
 
 func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	len0 := len(b)
-	seed = sum64_avx(seed, b)
+	if len0 >= 128 {
+		seed = sum64_amd64(seed, b)
+	} else {
+		for i := 0; i + BlockSize <= len0; i += 32 {
+			seed = consumeBlock(seed, b[i:])
+		}
+	}
 	p := b[len0 & ^(BlockSize - 1):]
 	switch len0 & (BlockSize - 1) {
 	case 0:
@@ -107,18 +113,6 @@ func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	return mum(seed^len1, wyp4)
 }
 
-func mum(a, b uint64) uint64 {
-	hi, lo := bits.Mul64(a, b)
-	return hi ^ lo
-}
-
-func mix0(a, b, seed uint64) uint64 {
-	return mum(a^seed^wyp0, b^seed^wyp1)
-}
-
-func mix1(a, b, seed uint64) uint64 {
-	return mum(a^seed^wyp2, b^seed^wyp3)
-}
 
 type digest struct {
 	seed  uint64
@@ -213,3 +207,17 @@ func consumeBlock(seed uint64, b []byte) uint64 {
 		uint64(b[28])<<32 | uint64(b[29])<<40 | uint64(b[30])<<48 | uint64(b[31])<<56
 	return mix0(p1, p2, seed) ^ mix1(p3, p4, seed)
 }
+
+func mum(a, b uint64) uint64 {
+	hi, lo := bits.Mul64(a, b)
+	return hi ^ lo
+}
+
+func mix0(a, b, seed uint64) uint64 {
+	return mum(a^seed^wyp0, b^seed^wyp1)
+}
+
+func mix1(a, b, seed uint64) uint64 {
+	return mum(a^seed^wyp2, b^seed^wyp3)
+}
+

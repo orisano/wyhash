@@ -71,7 +71,7 @@ func benchmarkSize(b *testing.B, size int) {
 	b.SetBytes(int64(size))
 	sum := make([]byte, Size)
 	for i := 0; i < b.N; i++ {
-		binary.LittleEndian.PutUint64(sum, Sum64(0, buf))
+		binary.LittleEndian.PutUint64(sum, Sum64(0, buf[:size]))
 	}
 }
 
