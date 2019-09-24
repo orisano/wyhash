@@ -4,6 +4,7 @@ package wyhash
 //go:generate go run ./avo/gen.go -out wyhash_amd64.s -stubs stubs.go
 
 import (
+	"encoding/binary"
 	"hash"
 	"math/bits"
 )
@@ -36,7 +37,7 @@ func Sum64(seed uint64, b []byte) uint64 {
 
 func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	len0 := len(b)
-	if len0 >= 128 {
+	if len0 >= 32 {
 		seed = sum64_amd64(seed, b)
 	} else {
 		for i := 0; i + BlockSize <= len0; i += 32 {
@@ -122,24 +123,19 @@ type digest struct {
 }
 
 func read64(b []byte) uint64 {
-	return read32(b)<<32 | read32(b[4:])
+	return read32(b) << 32 | read32(b[4:])
 }
 
 func read32(b []byte) uint64 {
-	_ = b[3]
-	x := uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16 | uint32(b[3])<<24
-	return uint64(x)
+	return uint64(binary.LittleEndian.Uint32(b))
 }
 
 func read16(b []byte) uint64 {
-	_ = b[1]
-	x := uint16(b[0]) | uint16(b[1])<<8
-	return uint64(x)
+	return uint64(binary.LittleEndian.Uint16(b))
 }
 
 func read8(b []byte) uint64 {
-	x := uint8(b[0])
-	return uint64(x)
+	return uint64(b[0])
 }
 
 func (d *digest) Write(p []byte) (int, error) {
@@ -197,14 +193,10 @@ func (d *digest) BlockSize() int {
 
 func consumeBlock(seed uint64, b []byte) uint64 {
 	_ = b[31]
-	p1 := uint64(b[0]) | uint64(b[1])<<8 | uint64(b[2])<<16 | uint64(b[3])<<24 |
-		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
-	p2 := uint64(b[8]) | uint64(b[9])<<8 | uint64(b[10])<<16 | uint64(b[11])<<24 |
-		uint64(b[12])<<32 | uint64(b[13])<<40 | uint64(b[14])<<48 | uint64(b[15])<<56
-	p3 := uint64(b[16]) | uint64(b[17])<<8 | uint64(b[18])<<16 | uint64(b[19])<<24 |
-		uint64(b[20])<<32 | uint64(b[21])<<40 | uint64(b[22])<<48 | uint64(b[23])<<56
-	p4 := uint64(b[24]) | uint64(b[25])<<8 | uint64(b[26])<<16 | uint64(b[27])<<24 |
-		uint64(b[28])<<32 | uint64(b[29])<<40 | uint64(b[30])<<48 | uint64(b[31])<<56
+	p1 := binary.LittleEndian.Uint64(b[0:])
+	p2 := binary.LittleEndian.Uint64(b[8:])
+	p3 := binary.LittleEndian.Uint64(b[16:])
+	p4 := binary.LittleEndian.Uint64(b[24:])
 	return mix0(p1, p2, seed) ^ mix1(p3, p4, seed)
 }
 
