@@ -39,10 +39,6 @@ func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	len0 := len(b)
 	if len0 >= 32 {
 		seed = sum64_amd64(seed, b)
-	} else {
-		for i := 0; i + BlockSize <= len0; i += 32 {
-			seed = consumeBlock(seed, b[i:])
-		}
 	}
 	p := b[len0 & ^(BlockSize - 1):]
 	switch len0 & (BlockSize - 1) {
