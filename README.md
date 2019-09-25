@@ -32,12 +32,12 @@ $ go test -bench . crypto/sha1
 goos: darwin
 goarch: amd64
 pkg: crypto/sha1
-BenchmarkHash8Bytes-6     	 8641054	       138 ns/op	  58.14 MB/s
-BenchmarkHash320Bytes-6   	 2140016	       556 ns/op	 575.52 MB/s
-BenchmarkHash1K-6         	 1000000	      1132 ns/op	 904.90 MB/s
-BenchmarkHash8K-6         	  158954	      7407 ns/op	1105.98 MB/s
+BenchmarkHash8Bytes-6     	 8646843	       135 ns/op	  59.19 MB/s
+BenchmarkHash320Bytes-6   	 2180929	       542 ns/op	 589.94 MB/s
+BenchmarkHash1K-6         	 1000000	      1105 ns/op	 926.38 MB/s
+BenchmarkHash8K-6         	  160221	      7219 ns/op	1134.78 MB/s
 PASS
-ok  	crypto/sha1	5.502s
+ok  	crypto/sha1	5.416s
 ```
 
 ```
@@ -45,12 +45,12 @@ $ go test -bench . github.com/orisano/wyhash
 goos: darwin
 goarch: amd64
 pkg: github.com/orisano/wyhash
-BenchmarkHash8Bytes-6     	165023144	         7.26 ns/op	1101.54 MB/s
-BenchmarkHash320Bytes-6   	37248912	        31.8 ns/op	10047.87 MB/s
-BenchmarkHash1K-6         	12369891	        96.0 ns/op	10669.18 MB/s
-BenchmarkHash8K-6         	 1659277	       719 ns/op	11387.74 MB/s
+BenchmarkHash8Bytes-6     	170730156	         6.97 ns/op	1147.86 MB/s
+BenchmarkHash320Bytes-6   	40570624	        28.6 ns/op	11176.21 MB/s
+BenchmarkHash1K-6         	14049066	        84.5 ns/op	12122.42 MB/s
+BenchmarkHash8K-6         	 2003247	       591 ns/op	13872.87 MB/s
 PASS
-ok  	github.com/orisano/wyhash	6.371s
+ok  	github.com/orisano/wyhash	6.163s
 ```
 
 ## Author
