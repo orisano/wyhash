@@ -70,6 +70,6 @@ func round(state, base, p Register) {
 	v := GP64()
 	MOVQ(Mem{Base: base}, v)
 	ADDQ(Imm(8), base)
+	XORQ(p, v)
 	XORQ(v, state)
-	XORQ(p, state)
 }
