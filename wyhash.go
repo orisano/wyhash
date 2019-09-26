@@ -40,7 +40,7 @@ func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	if len0 >= 32 {
 		seed = sum64_amd64(seed, b)
 	}
-	p := b[len0 & ^(BlockSize - 1):]
+	p := b[len0 & ^(BlockSize-1):]
 	switch len0 & (BlockSize - 1) {
 	case 0:
 		len1 = mix0(len1, 0, seed)
@@ -110,7 +110,6 @@ func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	return mum(seed^len1, wyp4)
 }
 
-
 type digest struct {
 	seed  uint64
 	state uint64
@@ -119,7 +118,7 @@ type digest struct {
 }
 
 func read64(b []byte) uint64 {
-	return read32(b) << 32 | read32(b[4:])
+	return uint64(binary.LittleEndian.Uint32(b))<<32 | uint64(binary.LittleEndian.Uint32(b[4:]))
 }
 
 func read32(b []byte) uint64 {
@@ -151,9 +150,9 @@ func (d *digest) Write(p []byte) (int, error) {
 		d.buf = d.buf[:0]
 		p = p[rest:]
 	}
-	for i, size := 0, len(p); i+BlockSize <= size; i += BlockSize {
-		seed = consumeBlock(seed, p)
-		p = p[BlockSize:]
+	if len(p) >= BlockSize {
+		seed = sum64_amd64(seed, p)
+		p = p[len(p) & ^(BlockSize - 1):]
 	}
 	if len(p) != 0 {
 		d.buf = append(d.buf, p...)
@@ -208,4 +207,3 @@ func mix0(a, b, seed uint64) uint64 {
 func mix1(a, b, seed uint64) uint64 {
 	return mum(a^seed^wyp2, b^seed^wyp3)
 }
-

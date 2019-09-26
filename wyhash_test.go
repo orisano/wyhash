@@ -90,3 +90,30 @@ func BenchmarkHash1K(b *testing.B) {
 func BenchmarkHash8K(b *testing.B) {
 	benchmarkSize(b, 8192)
 }
+
+func benchmarkDigest_Size(b *testing.B, size int) {
+	b.SetBytes(int64(size))
+	sum := make([]byte, Size)
+	d := New(0)
+	for i := 0; i < b.N; i++ {
+		d.Reset()
+		d.Write(buf[:size])
+		binary.LittleEndian.PutUint64(sum, d.Sum64())
+	}
+}
+
+func BenchmarkDigest_Hash8Bytes(b *testing.B) {
+	benchmarkDigest_Size(b, 8)
+}
+
+func BenchmarkDigest_Hash320Bytes(b *testing.B) {
+	benchmarkDigest_Size(b, 320)
+}
+
+func BenchmarkDigest_Hash1K(b *testing.B) {
+	benchmarkDigest_Size(b, 1024)
+}
+
+func BenchmarkDigest_Hash8K(b *testing.B) {
+	benchmarkDigest_Size(b, 8192)
+}

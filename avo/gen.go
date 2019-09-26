@@ -14,17 +14,17 @@ func main() {
 	DATA(24, U64(0x589965cc75374cc3))
 
 	TEXT("sum64_amd64", NOSPLIT, "func(seed uint64, b []byte) uint64")
-	p1 := R8
-	p2 := R9
-	p3 := R10
-	p4 := R11
+	s1 := R8
+	s2 := R9
+	s3 := R10
+	s4 := R11
 
 	wyp0 := R12
 	wyp1 := R13
 	wyp2 := R14
 	wyp3 := R15
 
-	Load(Param("seed"), p1)
+	Load(Param("seed"), s1)
 	MOVQ(wypData.Offset(0), wyp0)
 	MOVQ(wypData.Offset(8), wyp1)
 	MOVQ(wypData.Offset(16), wyp2)
@@ -40,36 +40,35 @@ func main() {
 	CMPQ(b, end)
 	JGT(LabelRef("done"))
 
-	MOVQ(p1, p2)
-	MOVQ(p1, p3)
-	MOVQ(p1, p4)
+	MOVQ(s1, s2)
+	round(Mem{Base: b, Disp: 0}, wyp0, s1)
+	MOVQ(s2, s3)
+	round(Mem{Base: b, Disp: 8}, wyp1, s2)
+	MOVQ(s3, s4)
+	round(Mem{Base: b, Disp: 16}, wyp2, s3)
+	round(Mem{Base: b, Disp: 24}, wyp3, s4)
 
-	round(p1, b, wyp0)
-	round(p2, b, wyp1)
-	round(p3, b, wyp2)
-	round(p4, b, wyp3)
-
-	MOVQ(p1, RAX)
-	MULQ(p2)
+	MOVQ(s1, RAX)
+	MULQ(s2)
 	XORQ(RAX, RDX)
-	MOVQ(RDX, p1)
+	MOVQ(RDX, s1)
 
-	MOVQ(p3, RAX)
-	MULQ(p4)
+	MOVQ(s3, RAX)
+	MULQ(s4)
 	XORQ(RAX, RDX)
-	XORQ(RDX, p1)
+	XORQ(RDX, s1)
+	ADDQ(Imm(32), b)
 	JMP(LabelRef("loop"))
 
 	Label("done")
-	Store(p1, ReturnIndex(0))
+	Store(s1, ReturnIndex(0))
 	RET()
 	Generate()
 }
 
-func round(state, base, p Register) {
+func round(m Mem, p, state Register) {
 	v := GP64()
-	MOVQ(Mem{Base: base}, v)
-	ADDQ(Imm(8), base)
+	MOVQ(m, v)
 	XORQ(p, v)
 	XORQ(v, state)
 }
