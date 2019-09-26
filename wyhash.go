@@ -36,11 +36,12 @@ func Sum64(seed uint64, b []byte) uint64 {
 }
 
 func sum64(seed uint64, b []byte, len1 uint64) uint64 {
-	len0 := len(b)
+	p := b
+	len0 := len(p)
 	if len0 >= 32 {
-		seed = sum64_amd64(seed, b)
+		seed = sum64_amd64(seed, p)
+		p = p[len0 & ^(BlockSize-1):]
 	}
-	p := b[len0 & ^(BlockSize-1):]
 	switch len0 & (BlockSize - 1) {
 	case 0:
 		len1 = mix0(len1, 0, seed)
@@ -152,7 +153,7 @@ func (d *digest) Write(p []byte) (int, error) {
 	}
 	if len(p) >= BlockSize {
 		seed = sum64_amd64(seed, p)
-		p = p[len(p) & ^(BlockSize - 1):]
+		p = p[len(p) & ^(BlockSize-1):]
 	}
 	if len(p) != 0 {
 		d.buf = append(d.buf, p...)
