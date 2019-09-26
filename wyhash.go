@@ -1,7 +1,7 @@
 // Package wyhash implements the wyhash hash algorithm as defined in github.com/wangyi-fudan/wyhash
 package wyhash
 
-//go:generate go run ./avo/gen.go -out wyhash_amd64.s -stubs stubs.go
+//go:generate go run ./avo/gen.go -out blocks_amd64.s -stubs blocks_amd64.go
 
 import (
 	"encoding/binary"
@@ -39,7 +39,7 @@ func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 	p := b
 	len0 := len(p)
 	if len0 >= 32 {
-		seed = sum64_amd64(seed, p)
+		seed = consumeBlocks(seed, p)
 		p = p[len0 & ^(BlockSize-1):]
 	}
 	switch len0 & (BlockSize - 1) {
@@ -152,7 +152,7 @@ func (d *digest) Write(p []byte) (int, error) {
 		p = p[rest:]
 	}
 	if len(p) >= BlockSize {
-		seed = sum64_amd64(seed, p)
+		seed = consumeBlocks(seed, p)
 		p = p[len(p) & ^(BlockSize-1):]
 	}
 	if len(p) != 0 {

@@ -7,13 +7,15 @@ import (
 )
 
 func main() {
+	ConstraintExpr("amd64")
+
 	wypData := GLOBL("wyp", NOPTR|RODATA)
 	DATA(0, U64(0xa0761d6478bd642f))
 	DATA(8, U64(0xe7037ed1a0b428db))
 	DATA(16, U64(0x8ebc6af09c88c6e3))
 	DATA(24, U64(0x589965cc75374cc3))
 
-	TEXT("sum64_amd64", NOSPLIT, "func(seed uint64, b []byte) uint64")
+	TEXT("consumeBlocks", NOSPLIT, "func(seed uint64, b []byte) uint64")
 	s1 := R8
 	s2 := R9
 	s3 := R10
