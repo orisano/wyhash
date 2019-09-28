@@ -46,14 +46,15 @@ func main() {
 	round(Mem{Base: b, Disp: 0}, wyp0, s1)
 	MOVQ(s2, s3)
 	round(Mem{Base: b, Disp: 8}, wyp1, s2)
-	MOVQ(s3, s4)
-	round(Mem{Base: b, Disp: 16}, wyp2, s3)
-	round(Mem{Base: b, Disp: 24}, wyp3, s4)
 
 	MOVQ(s1, RAX)
 	MULQ(s2)
 	XORQ(RAX, RDX)
 	MOVQ(RDX, s1)
+
+	MOVQ(s3, s4)
+	round(Mem{Base: b, Disp: 16}, wyp2, s3)
+	round(Mem{Base: b, Disp: 24}, wyp3, s4)
 
 	MOVQ(s3, RAX)
 	MULQ(s4)
@@ -69,7 +70,7 @@ func main() {
 }
 
 func round(m Mem, p, state Register) {
-	v := GP64()
+	v := RBX
 	MOVQ(m, v)
 	XORQ(p, v)
 	XORQ(v, state)
