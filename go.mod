@@ -1,4 +1,4 @@
-module github.com/orisano/wyhash
+module github.com/orisano/wyhash/v2
 
 go 1.12
 
