@@ -119,7 +119,7 @@ type digest struct {
 }
 
 func read64(b []byte) uint64 {
-	return uint64(binary.LittleEndian.Uint32(b))<<32 | uint64(binary.LittleEndian.Uint32(b[4:]))
+	return bits.RotateLeft64(binary.LittleEndian.Uint64(b), 32)
 }
 
 func read32(b []byte) uint64 {
