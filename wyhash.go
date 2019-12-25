@@ -42,7 +42,7 @@ func sum64(seed uint64, b []byte, len1 uint64) uint64 {
 		seed = consumeBlocks(seed, p)
 		p = p[len0 & ^(BlockSize-1):]
 	}
-	switch len0 & (BlockSize - 1) {
+	switch len(p) {
 	case 0:
 		len1 = mix0(len1, 0, seed)
 	case 1:
