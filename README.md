@@ -7,6 +7,8 @@ A pure-Go wyhash implementation.
 
 ## How to use
 ```go
+package main
+
 import (
 	"flag"
 	"fmt"
