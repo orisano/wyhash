@@ -21,10 +21,9 @@ TEXT ·consumeBlocks(SB), NOSPLIT, $0-40
 	MOVQ b_len+16(FP), AX
 	SUBQ $0x20, AX
 	LEAQ (SI)(AX*1), DI
+	JMP  cond
 
 loop:
-	CMPQ SI, DI
-	JGT  done
 	MOVQ R8, R9
 	MOVQ (SI), BX
 	XORQ R12, BX
@@ -49,8 +48,9 @@ loop:
 	XORQ AX, DX
 	XORQ DX, R8
 	ADDQ $0x20, SI
-	JMP  loop
 
-done:
+cond:
+	CMPQ SI, DI
+	JLE  loop
 	MOVQ R8, ret+32(FP)
 	RET

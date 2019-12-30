@@ -38,10 +38,8 @@ func main() {
 	end := RDI
 	LEAQ(Mem{Base: b, Index: len0, Scale: 1}, end)
 
+	JMP(LabelRef("cond"))
 	Label("loop")
-	CMPQ(b, end)
-	JGT(LabelRef("done"))
-
 	MOVQ(s1, s2)
 	round(Mem{Base: b, Disp: 0}, wyp0, s1)
 	MOVQ(s2, s3)
@@ -61,9 +59,10 @@ func main() {
 	XORQ(RAX, RDX)
 	XORQ(RDX, s1)
 	ADDQ(Imm(32), b)
-	JMP(LabelRef("loop"))
+	Label("cond")
+	CMPQ(b, end)
+	JLE(LabelRef("loop"))
 
-	Label("done")
 	Store(s1, ReturnIndex(0))
 	RET()
 	Generate()
