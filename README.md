@@ -15,7 +15,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/orisano/wyhash"
+	"github.com/orisano/wyhash/v2"
 )
 
 func main() {
