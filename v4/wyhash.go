@@ -43,10 +43,11 @@ rest:
 	see2 := seed
 	see3 := seed
 	for ; i >= 64; i -= 64 {
-		seed = wymum(wyr8(p)^seed^wyp0, wyr8(p[8:])^seed^wyp1)
-		see1 = wymum(wyr8(p[16:])^see1^wyp2, wyr8(p[24:])^see1^wyp3)
-		see2 = wymum(wyr8(p[32:])^see2^wyp1, wyr8(p[40:])^see2^wyp2)
-		see3 = wymum(wyr8(p[48:])^see3^wyp3, wyr8(p[56:])^see3^wyp0)
+		b := p[:64]
+		seed = wymum(wyr8(b)^seed^wyp0, wyr8(b[8:])^seed^wyp1)
+		see1 = wymum(wyr8(b[16:])^see1^wyp2, wyr8(b[24:])^see1^wyp3)
+		see2 = wymum(wyr8(b[32:])^see2^wyp1, wyr8(b[40:])^see2^wyp2)
+		see3 = wymum(wyr8(b[48:])^see3^wyp3, wyr8(b[56:])^see3^wyp0)
 		p = p[64:]
 	}
 	seed ^= see1 ^ see2 ^ see3
