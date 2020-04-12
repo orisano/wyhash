@@ -15,7 +15,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/orisano/wyhash/v2"
+	"github.com/orisano/wyhash"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 $ go test -bench . -count=5
 goos: linux
 goarch: amd64
-pkg: github.com/orisano/wyhash/v2
+pkg: github.com/orisano/wyhash
 BenchmarkHash8Bytes-36             	239112354	         5.02 ns/op	1593.40 MB/s
 BenchmarkHash8Bytes-36             	238774428	         5.02 ns/op	1593.65 MB/s
 BenchmarkHash8Bytes-36             	239230683	         5.02 ns/op	1593.35 MB/s
@@ -75,7 +75,7 @@ BenchmarkDigest_Hash8K-36          	 1796629	       668 ns/op	12261.52 MB/s
 BenchmarkDigest_Hash8K-36          	 1795533	       669 ns/op	12251.80 MB/s
 BenchmarkDigest_Hash8K-36          	 1793821	       664 ns/op	12329.72 MB/s
 PASS
-ok  	github.com/orisano/wyhash/v2	58.638s
+ok  	github.com/orisano/wyhash	58.638s
 ```
 
 ## Author
