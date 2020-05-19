@@ -79,7 +79,7 @@ ok  	github.com/orisano/wyhash	58.638s
 ```
 
 ## Author
-Nao YONASHIRO (@orisano)
+Nao Yonashiro (@orisano)
 
 ## License
 MIT
