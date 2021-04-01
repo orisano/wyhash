@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: golang:1.14
+      - image: golang:1.16
         environment:
           GO111MODULE=on
     working_directory: /var/repo
